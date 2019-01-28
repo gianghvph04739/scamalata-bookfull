@@ -1,0 +1,20 @@
+<resources>
+    <string name="app_name">My Application</string>
+    <string name="nav_feature">Nổi bật</string>
+    <string name="nav_trending">Thịnh hành</string>
+    <string name="nav_category">Thể loại</string>
+    <string name="nav_profile">Cá nhân</string>
+    <string name="app_market_link" />
+    <string name="app_google_play_store_link" />
+    <string name="some_error">Có lỗi xảy ra</string>
+    <string name="rate_us">Đánh giá ứng dụng</string>
+    <string name="later">Để sau</string>
+    <string name="submit">Gửi</string>
+    <string name="rating_play_store_redirect_message_line_1">rating line 1</string>
+    <string name="rating_play_store_redirect_message_line_2">rating line 2</string>
+    <string name="rating_play_store_text">rating store text</string>
+    <string name="rating_message">Vui lòng để lại đánh giá ứng dụng để chúng tôi cải thiện tốt hơn cho các bạn!</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+</resources>
