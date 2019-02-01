@@ -9,24 +9,35 @@ import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
+import com.bumptech.glide.util.Util;
+import com.skyreds.truyenfull.base.BaseActivity;
+import com.skyreds.truyenfull.model.FeatureSlide;
+import com.skyreds.truyenfull.networking.ApiEndpoint;
 import com.skyreds.truyenfull.networking.VolleySingleton;
-import com.skyreds.truyenfull.view.main.MainActivity;
+import com.skyreds.truyenfull.view.fragment.feature.model.HotBook;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
-public class FeaturePresenter {
-    private String URL_TRUYENDAHOANTHANH = "https://truyenfull.vn/danh-sach/truyen-hot/";
+import java.util.ArrayList;
 
+import static com.skyreds.truyenfull.networking.ApiEndpoint.BASE_URL;
+import static com.skyreds.truyenfull.networking.ApiEndpoint.URL_TRUYENDAHOANTHANH;
+
+public class FeaturePresenter  {
     private Context context;
-
-    public FeaturePresenter(Context context) {
-        this.context = context;
+    private FeatureDataListener listener;
+    public FeaturePresenter(Context mcontext,FeatureDataListener mlisListener) {
+        this.listener = mlisListener;
+        this.context = mcontext;
     }
 
-    private void loadBookHot() {
+    public void loadBookHot() {
+        final ArrayList<HotBook> lstHotBook = new ArrayList<>();
+        final ArrayList<String> lstPicture = new ArrayList<>();
+
         StringRequest stringRequest = new StringRequest(Request.Method.GET, URL_TRUYENDAHOANTHANH, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
@@ -36,6 +47,7 @@ public class FeaturePresenter {
                 Elements element = elements.select("div.row").next();
                 Log.e("size:", element.size() + "");
                 int i = 1;
+                lstHotBook.clear();
                 for (Element elm : element) {
                     Log.e("Element:", elm.toString());
                     Element elm_pic = elm.select("div.lazyimg").first();
@@ -52,22 +64,18 @@ public class FeaturePresenter {
                     Element div_chapter = elm.select("div.col-xs-2.text-info").first();
                     Element elm_chapter = div_chapter.getElementsByTag("a").first();
                     String chapter = elm_chapter.attr("title");
-
-                    Log.e("ELEM " + i, name
-                            + "\nchapter:" + chapter
-                            + "\nauthor:" + author
-                            + "\npic_landcape: " + pic_landcape
-                            + "\npic_portairt" + pic_portairt
-                            + "\nurl: " + url);
+                    HotBook hotBook = new HotBook(name,author,chapter,pic_landcape,pic_portairt,url);
+                    lstPicture.add(pic_landcape);
+                    lstHotBook.add(hotBook);
                     i++;
                 }
-
+                listener.onHotBookSuccess(lstHotBook,lstPicture);
             }
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
                 Log.e("ERRor:", error.toString());
-                Toast.makeText(context, "Lỗi khi tải dữ liệu!", Toast.LENGTH_SHORT).show();
+                listener.onHotBookFailed("Lỗi khi tải dữ liệu!");
             }
         });
         stringRequest.setRetryPolicy(new DefaultRetryPolicy(
@@ -75,6 +83,46 @@ public class FeaturePresenter {
                 DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
                 DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
         VolleySingleton.getInstance(context).getRequestQueue().add(stringRequest);
+    }
+
+    public void loadBanner() {
+        final ArrayList<FeatureSlide> lstBanner = new ArrayList<>();
+        final ArrayList<String> lstPicture = new ArrayList<>();
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, BASE_URL, new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+                Document document = Jsoup.parse(response);
+                lstBanner.clear();
+                Elements elements = document.select("div.index-intro");
+                Elements list = elements.select("div");
+                int i = 1;
+                for (Element element : list) {
+                    if (element.attr("itemtype").equals("https://schema.org/Book")) {
+                        Element elm_picture = element.select("img").first();
+                        Element elm_url = element.getElementsByTag("a").first();
+                        String picture = elm_picture.attr("src");
+                        String url = elm_url.attr("href");
+                        String name = element.getElementsByTag("h3").first().text();
+                        lstBanner.add(new FeatureSlide(name, picture, url));
+                        i++;
+                    }
+                }
+                listener.onLoadBannerSuccess(lstBanner,lstPicture);
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Log.e("ERRor:", error.toString());
+                listener.onLoadBannerFailed("Lỗi khi tải dữ liệu!");
+            }
+        });
+        stringRequest.setRetryPolicy(new DefaultRetryPolicy(
+                15000,
+                DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
+                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
+
+        VolleySingleton.getInstance(context).getRequestQueue().add(stringRequest);
 
     }
+
 }

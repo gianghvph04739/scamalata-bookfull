@@ -88,7 +88,7 @@ public class MainActivity extends BaseActivity {
         adapter.addFragment(profileFragment);
 
         viewPager.setAdapter(adapter);
-        viewPager.setOffscreenPageLimit(4);
+//        viewPager.setOffscreenPageLimit(4);
         viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {

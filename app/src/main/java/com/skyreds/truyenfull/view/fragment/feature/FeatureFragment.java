@@ -21,6 +21,7 @@ import com.skyreds.truyenfull.adapter.WebBannerAdapter;
 import com.skyreds.truyenfull.base.BaseFragment;
 import com.skyreds.truyenfull.model.FeatureSlide;
 import com.skyreds.truyenfull.networking.VolleySingleton;
+import com.skyreds.truyenfull.view.fragment.feature.model.HotBook;
 import com.skyreds.truyenfull.view.main.MainActivity;
 
 import org.jsoup.Jsoup;
@@ -37,15 +38,16 @@ import butterknife.Unbinder;
 
 import static com.skyreds.truyenfull.networking.ApiEndpoint.BASE_URL;
 
-public class FeatureFragment extends BaseFragment {
+public class FeatureFragment extends BaseFragment implements FeatureDataListener {
 
     private OnFragmentInteractionListener mListener;
-
+    private FeaturePresenter featurePresenter;
     private ArrayList<FeatureSlide> lstBanner;
     private List<String> lstPicture;
     @BindView(R.id.recycler)
     BannerLayout recyclerBanner;
     Unbinder unbinder;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -55,15 +57,15 @@ public class FeatureFragment extends BaseFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_feature, container, false);
-//        ButterKnife.bind(getActivity());
-        unbinder = ButterKnife.bind(this,view);
-        setUnBinder(unbinder,view);
+        unbinder = ButterKnife.bind(this, view);
+        setUnBinder(unbinder, view);
+        featurePresenter = new FeaturePresenter(getContext(), this);
         setUp(view);
         return view;
     }
 
-    private void setUpBanner(){
-        WebBannerAdapter webBannerAdapter=new WebBannerAdapter(getContext(),lstPicture);
+    private void setUpBanner() {
+        WebBannerAdapter webBannerAdapter = new WebBannerAdapter(getContext(), lstPicture);
         webBannerAdapter.setOnBannerItemClickListener(new BannerLayout.OnBannerItemClickListener() {
             @Override
             public void onItemClick(int position) {
@@ -72,55 +74,7 @@ public class FeatureFragment extends BaseFragment {
         });
         recyclerBanner.setAdapter(webBannerAdapter);
     }
-    private void loadBanner(final String url) {
-        showLoading();
-        StringRequest stringRequest = new StringRequest(Request.Method.GET, url, new Response.Listener<String>() {
-            @Override
-            public void onResponse(String response) {
-                Document document = Jsoup.parse(response);
-                lstBanner.clear();
-                Elements elements = document.select("div.index-intro");
-                Elements list = elements.select("div");
-                try {
-                    int i = 1;
-                    for (Element element : list) {
-                        if (element.attr("itemtype").equals("https://schema.org/Book")) {
-                            Element elm_picture = element.select("img").first();
-                            Element elm_url = element.getElementsByTag("a").first();
-                            String picture = elm_picture.attr("src");
-                            String url = elm_url.attr("href");
-                            String name = element.getElementsByTag("h3").first().text();
-                            lstBanner.add(new FeatureSlide(name,picture,url));
-                            lstPicture.add(picture);
-                            Log.e("Pic", picture);
-                            i++;
-                        }
-                    }
 
-//                    }
-                    hideLoading();
-                } catch (Exception ex) {
-                }
-//                lstSong.addAll(lstSongMore);
-//                adapter.notifyDataSetChanged();
-                hideLoading();
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                Log.e("ERRor:", error.toString());
-                hideLoading();
-                Toast.makeText(getContext(), "Lỗi khi tải dữ liệu!", Toast.LENGTH_SHORT).show();
-            }
-        });
-        stringRequest.setRetryPolicy(new DefaultRetryPolicy(
-                15000,
-                DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
-                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
-
-        VolleySingleton.getInstance(getContext()).getRequestQueue().add(stringRequest);
-
-    }
 
     @Override
     public void onAttach(Context context) {
@@ -141,10 +95,29 @@ public class FeatureFragment extends BaseFragment {
 
     @Override
     protected void setUp(View view) {
-        lstBanner = new ArrayList<>();
-        lstPicture = new ArrayList<>();
-        loadBanner(BASE_URL);
+        featurePresenter.loadBookHot();
+        featurePresenter.loadBanner();
+    }
+
+
+    @Override
+    public void onHotBookSuccess(ArrayList<HotBook> lst, ArrayList<String> lstBanner) {
+        lstPicture = lstBanner;
         setUpBanner();
+    }
+
+    @Override
+    public void onHotBookFailed(String message) {
+        showMessage(message);
+    }
+
+    @Override
+    public void onLoadBannerSuccess(ArrayList<FeatureSlide> lstFeatureSlide, ArrayList<String> lstPictures) {
+    }
+
+    @Override
+        public void onLoadBannerFailed(String message) {
+
     }
 
     public interface OnFragmentInteractionListener {
