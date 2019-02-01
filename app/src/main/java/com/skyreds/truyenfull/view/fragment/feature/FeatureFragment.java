@@ -143,8 +143,8 @@ public class FeatureFragment extends BaseFragment {
     protected void setUp(View view) {
         lstBanner = new ArrayList<>();
         lstPicture = new ArrayList<>();
-        setUpBanner();
         loadBanner(BASE_URL);
+        setUpBanner();
     }
 
     public interface OnFragmentInteractionListener {
