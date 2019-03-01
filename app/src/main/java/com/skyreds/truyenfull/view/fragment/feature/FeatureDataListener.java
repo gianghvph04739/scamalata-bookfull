@@ -11,4 +11,10 @@ public interface FeatureDataListener {
 
     void onLoadBannerSuccess(ArrayList<FeatureSlide> lstFeatureSlide, ArrayList<String> lstPicture);
     void onLoadBannerFailed(String message);
+
+    void onLoadNgonTinhSuccess(ArrayList<HotBook> lst);
+    void onLoadNgonTinhFailed(String message);
+
+    void onLoadNgonTinh2Success(ArrayList<HotBook> lst);
+    void onLoadNgonTinh2Failed(String message);
 }

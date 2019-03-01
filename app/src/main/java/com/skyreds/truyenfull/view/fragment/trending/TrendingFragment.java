@@ -1,78 +1,84 @@
 package com.skyreds.truyenfull.view.fragment.trending;
 
 import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.DefaultItemAnimator;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
+import com.example.library.banner.BannerLayout;
 import com.skyreds.truyenfull.R;
+import com.skyreds.truyenfull.adapter.AdapterBookStyle1;
+import com.skyreds.truyenfull.adapter.AdapterBookStyle2;
+import com.skyreds.truyenfull.base.BaseFragment;
+import com.skyreds.truyenfull.model.FeatureSlide;
+import com.skyreds.truyenfull.view.activity.listbook.ListBookActivity;
+import com.skyreds.truyenfull.view.fragment.feature.FeaturePresenter;
+import com.skyreds.truyenfull.view.fragment.feature.model.HotBook;
 
-/**
- * A simple {@link Fragment} subclass.
- * Activities that contain this fragment must implement the
- * {@link TrendingFragment.OnFragmentInteractionListener} interface
- * to handle interaction events.
- * Use the {@link TrendingFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
-public class TrendingFragment extends Fragment {
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
+import java.util.ArrayList;
+import java.util.List;
 
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
+import butterknife.Unbinder;
+
+import static com.skyreds.truyenfull.networking.ApiEndpoint.URL_TRUYENDAMMYHAY;
+import static com.skyreds.truyenfull.networking.ApiEndpoint.URL_TRUYENFULL;
+import static com.skyreds.truyenfull.networking.ApiEndpoint.URL_TRUYENMOI;
+import static com.skyreds.truyenfull.networking.ApiEndpoint.URL_TRUYENNGONTINHHAY;
+
+public class TrendingFragment extends BaseFragment implements TrendingDataListener {
 
     private OnFragmentInteractionListener mListener;
+    private TrendingPresenter trendingPresenter;
+    private ArrayList<HotBook> lstNew;
+    private ArrayList<HotBook> lstDamMy;
+    private ArrayList<HotBook> lstFull;
+    @BindView(R.id.rv_new)
+    RecyclerView rvNew;
 
-    public TrendingFragment() {
-        // Required empty public constructor
-    }
+    @BindView(R.id.rv_dammy)
+    RecyclerView rvDamMy;
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment TrendingFragment.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static TrendingFragment newInstance(String param1, String param2) {
-        TrendingFragment fragment = new TrendingFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
-    }
+    @BindView(R.id.rv_full)
+    RecyclerView rvFull;
+
+    @BindView(R.id.seeall_dammyhot)
+    TextView seeall_dammyhot;
+    @BindView(R.id.seeall_truyenhoanthanh)
+    TextView seeall_truyenhoanthanh;
+    @BindView(R.id.seeall_truyenmoi)
+    TextView seeall_truyenmoi;
+
+
+    private LinearLayoutManager manager;
+    Unbinder unbinder;
+    private AdapterBookStyle1 adapterBookStyle1;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_trending, container, false);
-    }
-
-    // TODO: Rename method, update argument and hook method into UI event
-    public void onButtonPressed(Uri uri) {
-        if (mListener != null) {
-            mListener.onFragmentInteraction(uri);
-        }
+        View view = inflater.inflate(R.layout.fragment_trending, container, false);
+        unbinder = ButterKnife.bind(this, view);
+        setUnBinder(unbinder, view);
+        trendingPresenter = new TrendingPresenter(getContext(), this);
+        setUp(view);
+        return view;
     }
 
     @Override
@@ -92,16 +98,81 @@ public class TrendingFragment extends Fragment {
         mListener = null;
     }
 
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-     */
+    @Override
+    protected void setUp(View view) {
+        trendingPresenter.loadDamMy();
+        trendingPresenter.loadFull();
+        trendingPresenter.loadNew();
+    }
+
+    @OnClick(R.id.seeall_truyenmoi)
+    void onClickNgonTinhHay() {
+        Intent i = new Intent(getContext(), ListBookActivity.class);
+        i.putExtra("url", URL_TRUYENMOI);
+        startActivity(i);
+    }
+
+    @OnClick(R.id.seeall_dammyhot)
+    void onClickDamMyHot() {
+        Intent i = new Intent(getContext(), ListBookActivity.class);
+        i.putExtra("url", URL_TRUYENDAMMYHAY);
+        startActivity(i);
+    }
+
+    @OnClick(R.id.seeall_truyenhoanthanh)
+    void onClickTruyenHoanThanh() {
+        Intent i = new Intent(getContext(), ListBookActivity.class);
+        i.putExtra("url", URL_TRUYENFULL);
+        startActivity(i);
+    }
+
+    @Override
+    public void onNewSuccess(ArrayList<HotBook> lst) {
+        lstNew = lst;
+        adapterBookStyle1 = new AdapterBookStyle1(getContext(), lstNew);
+        manager = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
+        rvNew.setLayoutManager(manager);
+        rvNew.setHasFixedSize(true);
+        rvNew.setItemAnimator(new DefaultItemAnimator());
+        rvNew.setAdapter(adapterBookStyle1);
+    }
+
+    @Override
+    public void onNewFailed(String message) {
+
+    }
+
+    @Override
+    public void onDamMySuccess(ArrayList<HotBook> lst) {
+        lstDamMy = lst;
+        adapterBookStyle1 = new AdapterBookStyle1(getContext(), lstDamMy);
+        manager = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
+        rvDamMy.setLayoutManager(manager);
+        rvDamMy.setHasFixedSize(true);
+        rvDamMy.setItemAnimator(new DefaultItemAnimator());
+        rvDamMy.setAdapter(adapterBookStyle1);
+    }
+
+    @Override
+    public void onDamMyFailed(String message) {
+
+    }
+
+    @Override
+    public void onFullSuccess(ArrayList<HotBook> lst) {
+        lstFull = lst;
+        adapterBookStyle1 = new AdapterBookStyle1(getContext(), lstFull);
+        manager = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
+        rvFull.setLayoutManager(manager);
+        rvFull.setHasFixedSize(true);
+        rvFull.setItemAnimator(new DefaultItemAnimator());
+        rvFull.setAdapter(adapterBookStyle1);
+    }
+
+    @Override
+    public void onFullFailed(String message) {
+    }
+
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);

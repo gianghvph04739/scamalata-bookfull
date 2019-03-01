@@ -1,9 +1,8 @@
-package com.skyreds.truyenfull.view.main;
+package com.skyreds.truyenfull.view.activity.main;
 
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.v4.view.ViewPager;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
@@ -88,7 +87,7 @@ public class MainActivity extends BaseActivity {
         adapter.addFragment(profileFragment);
 
         viewPager.setAdapter(adapter);
-//        viewPager.setOffscreenPageLimit(4);
+        viewPager.setOffscreenPageLimit(4);
         viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {

@@ -2,17 +2,13 @@ package com.skyreds.truyenfull.view.fragment.feature;
 
 import android.content.Context;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
-import com.bumptech.glide.util.Util;
-import com.skyreds.truyenfull.base.BaseActivity;
 import com.skyreds.truyenfull.model.FeatureSlide;
-import com.skyreds.truyenfull.networking.ApiEndpoint;
 import com.skyreds.truyenfull.networking.VolleySingleton;
 import com.skyreds.truyenfull.view.fragment.feature.model.HotBook;
 
@@ -24,7 +20,9 @@ import org.jsoup.select.Elements;
 import java.util.ArrayList;
 
 import static com.skyreds.truyenfull.networking.ApiEndpoint.BASE_URL;
-import static com.skyreds.truyenfull.networking.ApiEndpoint.URL_TRUYENDAHOANTHANH;
+import static com.skyreds.truyenfull.networking.ApiEndpoint.URL_TRUYENHOT;
+import static com.skyreds.truyenfull.networking.ApiEndpoint.URL_TRUYENNGONTINHHAY;
+import static com.skyreds.truyenfull.networking.ApiEndpoint.URL_TRUYENNGONTINHHAY2;
 
 public class FeaturePresenter  {
     private Context context;
@@ -37,19 +35,16 @@ public class FeaturePresenter  {
     public void loadBookHot() {
         final ArrayList<HotBook> lstHotBook = new ArrayList<>();
         final ArrayList<String> lstPicture = new ArrayList<>();
-
-        StringRequest stringRequest = new StringRequest(Request.Method.GET, URL_TRUYENDAHOANTHANH, new Response.Listener<String>() {
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, URL_TRUYENHOT, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
                 Document document = Jsoup.parse(response);
                 Elements elements1 = document.select("div.col-xs-12.col-sm-12.col-md-9.col-truyen-main");
                 Elements elements = elements1.select("div.list.list-truyen.col-xs-12");
                 Elements element = elements.select("div.row").next();
-                Log.e("size:", element.size() + "");
                 int i = 1;
                 lstHotBook.clear();
                 for (Element elm : element) {
-                    Log.e("Element:", elm.toString());
                     Element elm_pic = elm.select("div.lazyimg").first();
                     String pic_portairt = elm_pic.attr("data-image");
                     String pic_landcape = elm_pic.attr("data-desk-image");
@@ -63,7 +58,10 @@ public class FeaturePresenter  {
 
                     Element div_chapter = elm.select("div.col-xs-2.text-info").first();
                     Element elm_chapter = div_chapter.getElementsByTag("a").first();
-                    String chapter = elm_chapter.attr("title");
+                    String chapters = elm_chapter.attr("title");
+                    String[] parts = chapters.split("-");
+                    String chapter = parts[parts.length-1];
+
                     HotBook hotBook = new HotBook(name,author,chapter,pic_landcape,pic_portairt,url);
                     lstPicture.add(pic_landcape);
                     lstHotBook.add(hotBook);
@@ -74,7 +72,6 @@ public class FeaturePresenter  {
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                Log.e("ERRor:", error.toString());
                 listener.onHotBookFailed("Lỗi khi tải dữ liệu!");
             }
         });
@@ -84,6 +81,109 @@ public class FeaturePresenter  {
                 DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
         VolleySingleton.getInstance(context).getRequestQueue().add(stringRequest);
     }
+
+    public void loadNgonTinhHot() {
+        final ArrayList<HotBook> lstHotBook = new ArrayList<>();
+        final ArrayList<String> lstPicture = new ArrayList<>();
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, URL_TRUYENNGONTINHHAY, new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+                Document document = Jsoup.parse(response);
+                Elements elements1 = document.select("div.col-xs-12.col-sm-12.col-md-9.col-truyen-main");
+                Elements elements = elements1.select("div.list.list-truyen.col-xs-12");
+                Elements element = elements.select("div.row").next();
+                int i = 1;
+                lstHotBook.clear();
+                for (Element elm : element) {
+                    Element elm_pic = elm.select("div.lazyimg").first();
+                    String pic_portairt = elm_pic.attr("data-image");
+                    String pic_landcape = elm_pic.attr("data-desk-image");
+
+                    Element div_title = elm.select("div.col-xs-7").first();
+                    String name = div_title.getElementsByTag("h3").text();
+                    Element span_author = div_title.select("span.author").first();
+                    String author = span_author.text();
+                    Element elm_url = div_title.getElementsByTag("a").first();
+                    String url = elm_url.attr("href");
+
+                    Element div_chapter = elm.select("div.col-xs-2.text-info").first();
+                    Element elm_chapter = div_chapter.getElementsByTag("a").first();
+                    String chapters = elm_chapter.attr("title");
+                    String[] parts = chapters.split("-");
+                    String chapter = parts[parts.length-1];
+
+                    HotBook hotBook = new HotBook(name,author,chapter,pic_landcape,pic_portairt,url);
+                    lstPicture.add(pic_landcape);
+                    lstHotBook.add(hotBook);
+                    i++;
+                }
+                listener.onLoadNgonTinhSuccess(lstHotBook);
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Log.e("ERRor:", error.toString());
+                listener.onLoadNgonTinhFailed("Lỗi khi tải dữ liệu!");
+            }
+        });
+        stringRequest.setRetryPolicy(new DefaultRetryPolicy(
+                15000,
+                DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
+                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
+        VolleySingleton.getInstance(context).getRequestQueue().add(stringRequest);
+    }
+
+    public void loadNgonTinh2() {
+        final ArrayList<HotBook> lstHotBook = new ArrayList<>();
+        final ArrayList<String> lstPicture = new ArrayList<>();
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, URL_TRUYENNGONTINHHAY2, new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+                Document document = Jsoup.parse(response);
+                Elements elements1 = document.select("div.col-xs-12.col-sm-12.col-md-9.col-truyen-main");
+                Elements elements = elements1.select("div.list.list-truyen.col-xs-12");
+                Elements element = elements.select("div.row").next();
+                int i = 1;
+                lstHotBook.clear();
+                for (Element elm : element) {
+                    Element elm_pic = elm.select("div.lazyimg").first();
+                    String pic_portairt = elm_pic.attr("data-image");
+                    String pic_landcape = elm_pic.attr("data-desk-image");
+
+                    Element div_title = elm.select("div.col-xs-7").first();
+                    String name = div_title.getElementsByTag("h3").text();
+                    Element span_author = div_title.select("span.author").first();
+                    String author = span_author.text();
+                    Element elm_url = div_title.getElementsByTag("a").first();
+                    String url = elm_url.attr("href");
+
+                    Element div_chapter = elm.select("div.col-xs-2.text-info").first();
+                    Element elm_chapter = div_chapter.getElementsByTag("a").first();
+                    String chapters = elm_chapter.attr("title");
+                    String[] parts = chapters.split("-");
+                    String chapter = parts[parts.length-1];
+
+                    HotBook hotBook = new HotBook(name,author,chapter,pic_landcape,pic_portairt,url);
+                    lstPicture.add(pic_landcape);
+                    lstHotBook.add(hotBook);
+                    i++;
+                }
+                listener.onLoadNgonTinh2Success(lstHotBook);
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Log.e("ERRor:", error.toString());
+                listener.onLoadNgonTinh2Failed("Lỗi khi tải dữ liệu!");
+            }
+        });
+        stringRequest.setRetryPolicy(new DefaultRetryPolicy(
+                15000,
+                DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
+                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
+        VolleySingleton.getInstance(context).getRequestQueue().add(stringRequest);
+    }
+
 
     public void loadBanner() {
         final ArrayList<FeatureSlide> lstBanner = new ArrayList<>();

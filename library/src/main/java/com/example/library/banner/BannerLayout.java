@@ -143,7 +143,7 @@ public class BannerLayout extends FrameLayout {
         indicatorContainer.setAdapter(indicatorAdapter);
         LayoutParams params = new LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT);
-        params.gravity = Gravity.BOTTOM | gravity;
+        params.gravity = Gravity.BOTTOM | gravity| Gravity.CENTER;
         params.setMargins(marginLeft, 0, marginRight, marginBottom);
         addView(indicatorContainer, params);
         if (!showIndicator) {
