@@ -10,9 +10,9 @@ import android.view.ViewGroup;
 import com.bumptech.glide.Glide;
 import com.skyreds.truyenfull.R;
 import com.skyreds.truyenfull.listener.OnLoadMoreListener;
-import com.skyreds.truyenfull.view.activity.listbook.viewholder.LoadingViewHolder;
-import com.skyreds.truyenfull.view.activity.listbook.viewholder.UserViewHolder;
-import com.skyreds.truyenfull.view.fragment.feature.model.HotBook;
+import com.skyreds.truyenfull.ui.activity.listbook.viewholder.LoadingViewHolder;
+import com.skyreds.truyenfull.ui.activity.listbook.viewholder.UserViewHolder;
+import com.skyreds.truyenfull.ui.fragment.feature.model.HotBook;
 
 import java.util.ArrayList;
 

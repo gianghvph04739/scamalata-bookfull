@@ -12,18 +12,19 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.TextView;
 import android.widget.Toast;
 
-
 import com.skyreds.truyenfull.R;
 import com.skyreds.truyenfull.utils.CommonUtils;
 import com.skyreds.truyenfull.utils.NetworkUtils;
-import com.skyreds.truyenfull.view.fragment.category.CategoryFragment;
-import com.skyreds.truyenfull.view.fragment.feature.FeatureFragment;
-import com.skyreds.truyenfull.view.fragment.profile.ProfileFragment;
-import com.skyreds.truyenfull.view.fragment.trending.TrendingFragment;
+import com.skyreds.truyenfull.ui.fragment.category.CategoryFragment;
+import com.skyreds.truyenfull.ui.fragment.feature.FeatureFragment;
+import com.skyreds.truyenfull.ui.fragment.profile.ProfileFragment;
+import com.skyreds.truyenfull.ui.fragment.trending.TrendingFragment;
 
 import butterknife.Unbinder;
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
@@ -146,6 +147,12 @@ public abstract class BaseActivity extends AppCompatActivity
             mUnBinder.unbind();
         }
         super.onDestroy();
+    }
+
+    public void setFullScreen(){
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+                WindowManager.LayoutParams.FLAG_FULLSCREEN);
     }
 
     protected abstract void setUp();

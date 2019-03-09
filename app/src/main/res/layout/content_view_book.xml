@@ -5,13 +5,17 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:context=".view.activity.viewbook.ViewBookActivity"
+    tools:context=".ui.activity.viewbook.ViewBookActivity"
     tools:showIn="@layout/activity_view_book">
 
     <TextView
+        android:id="@+id/tv_descriptions"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_margin="@dimen/text_margin"
+        android:layout_margin="@dimen/dp_8"
+        android:textSize="@dimen/sp_16"
+        android:paddingBottom="@dimen/dp_16"
+        android:textColor="@color/black"
         android:text="@string/large_text" />
 
 </android.support.v4.widget.NestedScrollView>

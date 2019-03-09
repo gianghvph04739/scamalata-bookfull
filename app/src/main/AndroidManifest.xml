@@ -14,12 +14,15 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".view.activity.viewbook.ViewBookActivity"
+            android:name=".ui.activity.readbook.ReadBookActivity"
+            android:label="@string/title_activity_read_book"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
+        <activity
+            android:name=".ui.activity.viewbook.ViewBookActivity"
             android:label="@string/title_activity_view_book"
-            android:theme="@style/AppTheme.NoActionBar">
-        </activity>
-        <activity android:name=".view.activity.listbook.ListBookActivity" />
-        <activity android:name=".view.activity.main.MainActivity">
+            android:theme="@style/AppTheme.NoActionBar"></activity>
+        <activity android:name=".ui.activity.listbook.ListBookActivity" />
+        <activity android:name=".ui.activity.main.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

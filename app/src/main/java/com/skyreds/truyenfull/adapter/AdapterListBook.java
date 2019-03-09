@@ -1,27 +1,21 @@
 package com.skyreds.truyenfull.adapter;
 
 import android.content.Context;
-import android.os.Parcelable;
+import android.content.Intent;
 import android.support.annotation.NonNull;
-import android.support.constraint.ConstraintLayout;
 import android.support.v7.widget.RecyclerView;
-import android.text.format.DateUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.skyreds.truyenfull.R;
-import com.skyreds.truyenfull.view.fragment.feature.model.HotBook;
+import com.skyreds.truyenfull.ui.activity.viewbook.ViewBookActivity;
+import com.skyreds.truyenfull.ui.fragment.feature.model.HotBook;
 
 import java.util.ArrayList;
-import java.util.List;
-
-import butterknife.BindView;
-import butterknife.ButterKnife;
 
 public class AdapterListBook extends RecyclerView.Adapter<AdapterListBook.MyViewHolder> {
 
@@ -42,16 +36,22 @@ public class AdapterListBook extends RecyclerView.Adapter<AdapterListBook.MyView
 
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
-        HotBook item = lst.get(position);
+        final HotBook item = lst.get(position);
         holder.tvName.setText(item.getName());
         holder.tvChapter.setText(item.getChapter());
         Glide.with(context).load(item.getPic_portairt()).into(holder.imgBook);
+        holder.imgBook.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent i  = new Intent(context, ViewBookActivity.class);
+                i.putExtra("url",item.getLink_book());
+                i.putExtra("name",item.getName());
+                context.startActivity(i);
+            }
+        });
     }
 
     public void addDataLoadmore(ArrayList<HotBook> lsts){
-//        for(int i=0; i<lst.size();i++){
-//            lst.add(lst.get(i));
-//        }
         lst.addAll(lsts);
         notifyDataSetChanged();
     }

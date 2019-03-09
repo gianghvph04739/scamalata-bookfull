@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,8 +13,8 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.skyreds.truyenfull.R;
-import com.skyreds.truyenfull.view.activity.viewbook.ViewBookActivity;
-import com.skyreds.truyenfull.view.fragment.feature.model.HotBook;
+import com.skyreds.truyenfull.ui.activity.viewbook.ViewBookActivity;
+import com.skyreds.truyenfull.ui.fragment.feature.model.HotBook;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -100,11 +99,12 @@ public class LoadMoreGridAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         viewHolder.tvName.setText(item.getName());
         viewHolder.tvChapter.setText(item.getChapter());
         Glide.with(context).load(item.getPic_portairt()).into(viewHolder.imgBook);
-        viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
+        viewHolder.imgBook.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent i  = new Intent(context, ViewBookActivity.class);
                 i.putExtra("url",item.getLink_book());
+                i.putExtra("name",item.getName());
                 context.startActivity(i);
             }
         });

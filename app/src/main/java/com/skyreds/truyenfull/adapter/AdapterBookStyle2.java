@@ -12,8 +12,8 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.skyreds.truyenfull.R;
-import com.skyreds.truyenfull.view.activity.viewbook.ViewBookActivity;
-import com.skyreds.truyenfull.view.fragment.feature.model.HotBook;
+import com.skyreds.truyenfull.ui.activity.viewbook.ViewBookActivity;
+import com.skyreds.truyenfull.ui.fragment.feature.model.HotBook;
 
 import java.util.List;
 
@@ -62,6 +62,7 @@ public class AdapterBookStyle2 extends RecyclerView.Adapter<AdapterBookStyle2.Vi
             public void onClick(View view) {
                 Intent i  = new Intent(mContext, ViewBookActivity.class);
                 i.putExtra("url",item.getLink_book());
+                i.putExtra("name",item.getName());
                 mContext.startActivity(i);
             }
         });

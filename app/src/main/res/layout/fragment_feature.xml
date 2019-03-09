@@ -10,7 +10,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
-        tools:context=".view.fragment.feature.FeatureFragment">
+        tools:context=".ui.fragment.feature.FeatureFragment">
 
         <include
             layout="@layout/search_view"
